@@ -38,7 +38,7 @@ Public Function Connect() As Messages
 
      Dim sFilePath As String
      
-     'Set initial return state as False
+     'Set initial return state as Failed DB Connection
      Connect = Messages.msgFailedDBConnection
      
      'Close any previous connections
@@ -71,7 +71,7 @@ Public Function Query(ByVal sSQL As String, Optional ByVal bReadOnly As Boolean 
 'runs the query, saves the results in m_adoRecordset member variable
 'returns True/False based on if the query was successful
 
-     'Set initial return state as false
+     'Set initial return state as Failed DB Connection
      Query = Messages.msgFailedDBConnection
      
      'Close any previous recordsets & connections
@@ -80,6 +80,7 @@ Public Function Query(ByVal sSQL As String, Optional ByVal bReadOnly As Boolean 
      'Open the connection
      If Me.Connect = Messages.msgFailedDBConnection Then Exit Function
      
+     'Set new error response as Failed Query to start
      Query = Messages.msgFailedQuery
      
      Set m_adoRecordset = New ADODB.Recordset

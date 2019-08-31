@@ -76,8 +76,8 @@ Property Get PermissionArray() As String()
 
 End Property
 
-Property Let PermissionArray(ByRef asPermissions() As String)
+Property Get Permissions() As String
 
-     m_asPermissions = asPermissions
+     Permissions = m_sPermissions
 
 End Property
