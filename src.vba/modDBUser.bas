@@ -1,5 +1,26 @@
 Option Explicit
 
+Public Function DBUser_ChangePassword(ByVal sUsername As String, ByVal sNewPassword As String) As Messages
+'Update the password for sUsername
+
+     Dim cROWSDB As New clsROWSDB
+     Dim sSQL As String
+     
+     'Build the SQL statement to update the password for the given user
+     sSQL = ""
+     sSQL = sSQL & "UPDATE [tblUsers] "
+     sSQL = sSQL & "SET [tblUsers].sPassword = '" & sNewPassword & "' "
+     sSQL = sSQL & "WHERE [tblUsers].sUsername = '" & sUsername & "';"
+     
+     'Since we are not requesting any information from the database
+     'just return the result of the query
+     DBUser_ChangePassword = cROWSDB.Query(sSQL, False)
+     
+     'Free memory
+     Set cROWSDB = Nothing
+
+End Function
+
 Public Function DBUser_CheckCredentials(ByVal sUsername As String, ByVal sPassword As String, ByRef bIsTempPass As Boolean, _
                                         ByRef sRoleName As String, ByRef iRoleRank As Integer) As Messages
 'Purpose of this function is to be called if you want to check that a user has entered valid credentials (username/password)

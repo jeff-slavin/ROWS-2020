@@ -23,6 +23,30 @@ Private Sub Class_Terminate()
      Call Me.Reset
 End Sub
 
+Public Function Login(ByVal sUsername As String, ByVal sPassword As String) As Messages
+'Attempt to login the user
+
+     Dim bIsTempPass As Boolean
+     Dim sRoleName As String
+     Dim iRoleRank As Integer
+
+     Login = DBUser_CheckCredentials(sUsername, sPassword, bIsTempPass, sRoleName, iRoleRank)
+
+     If Login <> Messages.msgTrue Then Exit Function
+     
+     If bIsTempPass = True Then
+          Login = Messages.msgTemporaryPassword
+          Exit Function
+     End If
+     
+     m_sUsername = sUsername
+     m_sRole = sRoleName
+     m_iRoleRank = iRoleRank
+     
+     'TODO - get permissions
+
+End Function
+
 Public Sub Reset()
 'Reset the user data back to an empty state
 

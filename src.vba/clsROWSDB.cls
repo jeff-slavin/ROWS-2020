@@ -190,7 +190,7 @@ Public Function Fields(ByVal sFieldName As String, ByRef vValue As Variant) As B
      'Try / Catch Start
      On Error GoTo Fields_Error
 
-          If Not m_adoRecordset Is Nothing Then Fields = m_adoRecordset.Fields(sFieldName).Value
+          If Not m_adoRecordset Is Nothing Then vValue = m_adoRecordset.Fields(sFieldName).Value
      
      On Error GoTo 0
      'End Try/Catch
@@ -201,4 +201,20 @@ Public Function Fields(ByVal sFieldName As String, ByRef vValue As Variant) As B
 Fields_Error:
      Exit Function
      
+End Function
+
+Public Function FieldsHeader(ByVal iIndex As Integer) As String
+
+     FieldsHeader = ""
+     
+     On Error GoTo FieldsHeader_Error
+     
+     If Not m_adoRecordset Is Nothing Then FieldsHeader = m_adoRecordset.Fields(iIndex).Name
+     
+     On Error GoTo 0
+     
+     
+FieldsHeader_Error:
+     Exit Function
+
 End Function
