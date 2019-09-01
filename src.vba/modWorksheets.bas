@@ -45,26 +45,51 @@ Public Sub wsWelcome_ShowSection(ByVal sSectionName As String)
                ws.Shapes("cmdLogin").Top = gc_wscmdLoginTop
                ws.Shapes("cmdLogin").Visible = True
                ws.Range("D7").Select
+               ws.Range(gc_wsWelcomeUsername).Value = ""
+               ws.Range(gc_wsWelcomePassword).Value = ""
+               ws.Range(gc_wsWelcomeLoginError).Value = ""
+               
                ws.Range(gc_wsLogoutRange).EntireRow.Hidden = True
                ws.Shapes("cmdLogout").Visible = False
+               
                ws.Range(gc_wsTempPasswordRange).EntireRow.Hidden = True
                ws.Shapes("cmdUpdatePassword").Visible = False
                
           Case "Logout"
                ws.Range(gc_wsLoginRange).EntireRow.Hidden = True
                ws.Shapes("cmdLogin").Visible = False
+               
                ws.Range(gc_wsLogoutRange).EntireRow.Hidden = False
                ws.Shapes("cmdLogout").Top = gc_wscmdLogoutTop
                ws.Shapes("cmdLogout").Visible = True
                ws.Range("D17").Select
+               
+               If Not g_cUser Is Nothing Then
+                    ws.Range(gc_wsWelcomeLoggedInUsername).Value = g_cUser.Username
+                    ws.Range(gc_wsWelcomeLoggedInRole).Value = g_cUser.Role
+               Else
+                    Set g_cUser = New clsUser
+                    Call wsWelcome_ShowSection("Login")
+                    Call Worksheets_ShowWelcomeAndOne("Welcome")
+                    Set ws = Nothing
+                    Exit Sub
+               End If
+               
                ws.Range(gc_wsTempPasswordRange).EntireRow.Hidden = True
                ws.Shapes("cmdUpdatePassword").Visible = False
                
           Case "TempPassword"
                ws.Range(gc_wsLoginRange).EntireRow.Hidden = True
                ws.Shapes("cmdLogin").Visible = False
+               
                ws.Range(gc_wsLogoutRange).EntireRow.Hidden = True
                ws.Shapes("cmdLogout").Visible = False
+               
+               ws.Range(gc_wsWelcomeTempPassword).Value = ""
+               ws.Range(gc_wsWelcomeNewPassword).Value = ""
+               ws.Range(gc_wsWelcomeRetypePassword).Value = ""
+               ws.Range(gc_wsWelcomeTempPasswordError).Value = ""
+               
                ws.Range(gc_wsTempPasswordRange).EntireRow.Hidden = False
                ws.Shapes("cmdUpdatePassword").Top = gc_wscmdTempPasswordTop
                ws.Shapes("cmdUpdatePassword").Visible = True

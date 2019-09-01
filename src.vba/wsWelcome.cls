@@ -54,8 +54,8 @@ Private Sub cmdLogin_Click()
           Call Worksheets_ShowWelcomeAndOne("Dashboard")
           
           'Display Logged In Information In the Logout Section of the Welcome worksheet
-          Worksheets("Welcome").Range(gc_wsWelcomeLoggedInUsername).Value = g_cUser.Username
-          Worksheets("Welcome").Range(gc_wsWelcomeLoggedInRole).Value = g_cUser.Role
+          'Worksheets("Welcome").Range(gc_wsWelcomeLoggedInUsername).Value = g_cUser.Username
+          'Worksheets("Welcome").Range(gc_wsWelcomeLoggedInRole).Value = g_cUser.Role
      ElseIf msgResponse = msgTemporaryPassword Then
           'User needs to reset their password (as current password is a temp password)
           MsgBox "Your password is marked as temporary. You are required to change your password to login.", vbOKOnly, "Temporary Password Reset"
@@ -103,11 +103,13 @@ Private Sub cmdUpdatePassword_Click()
 'Updates the password in the system
 'Logs the user in if successful
 
+     Dim sUsername As String
      Dim sTempPassword As String
      Dim sNewPassword As String
      Dim sRetypeNewPassword As String
      Dim msgResponse As Messages
      
+     sUsername = Worksheets("Welcome").Range(gc_wsWelcomeUsername).Value
      sTempPassword = Worksheets("Welcome").Range(gc_wsWelcomeTempPassword).Value
      sNewPassword = Worksheets("Welcome").Range(gc_wsWelcomeNewPassword).Value
      sRetypeNewPassword = Worksheets("Welcome").Range(gc_wsWelcomeRetypePassword).Value

@@ -1,5 +1,22 @@
 Option Explicit
 
+Public Function DBUser_SetLastLoginDateTime(ByVal sUsername As String) As Messages
+
+     Dim cROWSDB As New clsROWSDB
+     Dim sSQL As String
+     
+     'Build the SQL statement to update just the last login time for the user
+     sSQL = ""
+     sSQL = sSQL & "UPDATE [tblUsers] "
+     sSQL = sSQL & "SET [tblUsers].dLastLogin = Now() "
+     sSQL = sSQL & "WHERE [tblUsers].sUsername = '" & sUsername & "';"
+     
+     DBUser_SetLastLoginDateTime = cROWSDB.Query(sSQL, False)
+     
+     Set cROWSDB = Nothing
+
+End Function
+
 Public Function DBUser_ChangePassword(ByVal sUsername As String, ByVal sNewPassword As String, ByVal bIsTempPass As Boolean) As Messages
 'Update the password for sUsername
 'Also set bIsTempPass to variable that was passed

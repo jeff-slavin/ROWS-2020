@@ -43,6 +43,9 @@ Public Function Login(ByVal sUsername As String, ByVal sPassword As String) As M
      m_sRole = sRoleName
      m_iRoleRank = iRoleRank
      
+     'update the last login date/time in the database
+     Call DBUser_SetLastLoginDateTime(sUsername)
+     
      'TODO - get permissions
 
 End Function
