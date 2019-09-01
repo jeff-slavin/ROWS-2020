@@ -1,7 +1,8 @@
 Option Explicit
 
-Public Function DBUser_ChangePassword(ByVal sUsername As String, ByVal sNewPassword As String) As Messages
+Public Function DBUser_ChangePassword(ByVal sUsername As String, ByVal sNewPassword As String, ByVal bIsTempPass As Boolean) As Messages
 'Update the password for sUsername
+'Also set bIsTempPass to variable that was passed
 
      Dim cROWSDB As New clsROWSDB
      Dim sSQL As String
@@ -9,7 +10,8 @@ Public Function DBUser_ChangePassword(ByVal sUsername As String, ByVal sNewPassw
      'Build the SQL statement to update the password for the given user
      sSQL = ""
      sSQL = sSQL & "UPDATE [tblUsers] "
-     sSQL = sSQL & "SET [tblUsers].sPassword = '" & sNewPassword & "' "
+     sSQL = sSQL & "SET [tblUsers].sPassword = '" & sNewPassword & "', "
+     sSQL = sSQL & "[tblUsers].bIsTempPass = " & bIsTempPass & " "
      sSQL = sSQL & "WHERE [tblUsers].sUsername = '" & sUsername & "';"
      
      'Since we are not requesting any information from the database

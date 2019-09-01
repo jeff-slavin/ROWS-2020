@@ -156,17 +156,46 @@ Private Sub cmdUpdatePassword_Click()
           'User has entered their correct temporary password and a valid new password (at least 5 characters)
           'Update the database with this new password
           'Login the user
-          msgResponse = DBUser_ChangePassword(sUsername, sNewPassword)
+          msgResponse = DBUser_ChangePassword(sUsername, sNewPassword, False)
           
           'Based on the response, let's take action
           If msgResponse = Messages.msgTrue Then
                'Successful! So let's login the user
+               msgResponse = g_cUser.Login(sUsername, sNewPassword)
+               
+               If msgResponse = Messages.msgTrue Then
+                    'Successful login using the new credentials
+                    'Show Logout section of Welcome worksheet
+                    'Take user to Dashboard worksheet (keeping Welcome worksheet visible/selectable)
+                    Call wsWelcome_ShowSection("Logout")
+                    Call Worksheets_ShowWelcomeAndOne("Dashboard")
+          
+                    'Display Logged In Information In the Logout Section of the Welcome worksheet
+                    Worksheets("Welcome").Range(gc_wsWelcomeLoggedInUsername).Value = g_cUser.Username
+                    Worksheets("Welcome").Range(gc_wsWelcomeLoggedInRole).Value = g_cUser.Role
+               Else
+                    'Login not successful using the new credentials - show appropriate error message
+                    Select Case msgResponse
+                         Case Messages.msgFailedDBConnection
+                              Worksheets("Welcome").Range(gc_wsWelcomeTempPasswordError).Value = "Database connection error."
+                         Case Messages.msgFailedQuery
+                              Worksheets("Welcome").Range(gc_wsWelcomeTempPasswordError).Value = "Database query error."
+                         Case Messages.msgFalse
+                              Worksheets("Welcome").Range(gc_wsWelcomeTempPasswordError).Value = "Database credentials error."
+                    End Select
+               End If
+               
           Else
                'Failed! Let's show the appropriate error message
+               Select Case msgResponse
+                    Case Messages.msgFailedDBConnection
+                         Worksheets("Welcome").Range(gc_wsWelcomeTempPasswordError).Value = "Database connection error."
+                    Case Messages.msgFailedQuery
+                             Worksheets("Welcome").Range(gc_wsWelcomeTempPasswordError).Value = "Database query error."
+                    Case Messages.msgFalse
+                         Worksheets("Welcome").Range(gc_wsWelcomeTempPasswordError).Value = "Database credentials error."
+               End Select
           End If
-          
-          
-          'TODO TODO TODO
           
      End If
 
