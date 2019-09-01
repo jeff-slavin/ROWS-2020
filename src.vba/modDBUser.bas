@@ -92,5 +92,10 @@ End Function
 
 Public Function DBUser_GetPermissions(ByVal sUsername As String, ByRef asPermissions() As String) As Messages
 
+     Dim cROWSDB As clsROWSDB
+     Dim sSQL As String
+
+     'TODO TODO TODO
+     
 
 End Function
