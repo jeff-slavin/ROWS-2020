@@ -4,6 +4,19 @@ Option Explicit
 'Worksheets :            WELCOME
 '*************************************************************************************
 
+Public Sub Worksheets_ShowAll()
+'Testing Function - should not be called when in production
+
+     Dim ws As Worksheet
+     
+     For Each ws In ActiveWorkbook.Worksheets
+          ws.Visible = xlSheetVisible
+     Next ws
+     
+     Set ws = Nothing
+
+End Sub
+
 Public Sub Worksheets_ShowWelcomeAndOne(ByVal sSheetName As String)
 'Keeps the Welcome worksheet visible
 'Hides all other worksheets except for the one that has the name matching the parameter sSheetName
@@ -37,6 +50,8 @@ Public Sub wsWelcome_ShowSection(ByVal sSectionName As String)
      Dim ws As Worksheet
      
      Set ws = Worksheets("Welcome")
+     
+     ws.Activate
 
      Select Case sSectionName
      

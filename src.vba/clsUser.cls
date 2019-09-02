@@ -23,6 +23,44 @@ Private Sub Class_Terminate()
      Call Me.Reset
 End Sub
 
+Public Sub Logout()
+
+     Call Me.Reset
+
+     Call wsWelcome_ShowSection("Login")
+     Call Worksheets_ShowWelcomeAndOne("Welcome")
+
+End Sub
+
+Public Sub SavePermissionsToString()
+'Saves the permissions in m_asPermissions to the string member variable m_sPermissions
+     
+     'Variable Declaration
+     Dim i As Integer
+     
+     'Set initial state of member variable, no permissions
+     m_sPermissions = ""
+     
+     'Check that we have permissions in our member array (otherwise exit)
+     If Not IsArray(m_asPermissions) Then Exit Sub
+     
+     'Is the array valid?
+     If (Not Not m_asPermissions) <> 0 Then
+          'Valid Array - so let's convert this to the string
+          
+          For i = LBound(m_asPermissions) To UBound(m_asPermissions)
+               m_sPermissions = m_sPermissions & m_asPermissions(i) & "|"
+          Next i
+          
+     Else
+          'Invalid array - exit
+          
+          Exit Sub
+          
+     End If
+
+End Sub
+
 Public Function Login(ByVal sUsername As String, ByVal sPassword As String) As Messages
 'Attempt to login the user
 
@@ -32,21 +70,36 @@ Public Function Login(ByVal sUsername As String, ByVal sPassword As String) As M
 
      Login = DBUser_CheckCredentials(sUsername, sPassword, bIsTempPass, sRoleName, iRoleRank)
 
+     'Check for failure, letting error message bubble up
      If Login <> Messages.msgTrue Then Exit Function
      
+     'Check for temporary password for user.
+     'If true, then return this and exit (without setting anything)
+     'This allows the calling function to show the temp password reset
+     'Until that is done, we don't want to actually fully login the user
+     'Once temp password is resolved, this function can be called again
      If bIsTempPass = True Then
           Login = Messages.msgTemporaryPassword
           Exit Function
      End If
      
+     'Set member variables (successful login - no temp password)
      m_sUsername = sUsername
      m_sRole = sRoleName
      m_iRoleRank = iRoleRank
      
+     'Get User Permissions
+     'This could return zero permissions (and so m_asPermissions would be an empty array)
+     Login = DBUser_GetPermissions(m_sUsername, m_asPermissions)
+
+     'Check for failure and set appropriate error response code
+     If Login <> Messages.msgTrue Then Exit Function
+     
+     'Save permissions to the member string
+     Call SavePermissionsToString
+
      'update the last login date/time in the database
      Call DBUser_SetLastLoginDateTime(sUsername)
-     
-     'TODO - get permissions
 
 End Function
 

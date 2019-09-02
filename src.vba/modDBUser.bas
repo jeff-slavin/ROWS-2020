@@ -92,10 +92,51 @@ End Function
 
 Public Function DBUser_GetPermissions(ByVal sUsername As String, ByRef asPermissions() As String) As Messages
 
-     Dim cROWSDB As clsROWSDB
+     'Variable Declarations
+     Dim cROWSDB As New clsROWSDB
      Dim sSQL As String
-
-     'TODO TODO TODO
+     Dim i As Integer
      
+     'Clear out ByRef array parameter (so if this fails that returns as empty)
+     If IsArray(asPermissions) Then Erase asPermissions
+
+     'Create SQL statement
+     sSQL = ""
+     sSQL = sSQL & "SELECT [tblPermissionList].sPermissionName "
+     sSQL = sSQL & "FROM [tblPermissionList], [tblUsers], [tblUserPermissions] "
+     sSQL = sSQL & "WHERE [tblPermissionList].ID = [tblUserPermissions].iPermissionID "
+     sSQL = sSQL & "AND [tblUserPermissions].iUserID = [tblUsers].ID "
+     sSQL = sSQL & "AND [tblUsers].sUsername = '" & sUsername & "' "
+     sSQL = sSQL & "AND [tblUserPermissions].bIsActive = TRUE "
+     sSQL = sSQL & "AND [tblPermissionList].bIsActive = TRUE;"
+     
+     'Run the query
+     DBUser_GetPermissions = cROWSDB.Query(sSQL, True)
+     
+     'Check for an error
+     If DBUser_GetPermissions <> Messages.msgTrue Then GoTo DBUser_GetPermissions_Error
+     
+     
+     'Query was successful, let's see if we got any permissions returned
+     'If no permissions, let's exit the function now
+     'The user can be logged in, but will not have any permissions
+     If cROWSDB.RecordCount < 1 Then GoTo DBUser_GetPermissions_Error
+     
+     'Save the permissions in the array ByRef parameter
+     cROWSDB.MoveFirst
+     i = 1
+     ReDim asPermissions(1 To cROWSDB.RecordCount)
+     
+     While Not cROWSDB.EOF
+          
+          Call cROWSDB.Fields("sPermissionName", asPermissions(i))
+          
+          i = i + 1
+          cROWSDB.MoveNext
+     Wend
+     
+DBUser_GetPermissions_Error:
+     'Free up memory
+     Set cROWSDB = Nothing
 
 End Function
