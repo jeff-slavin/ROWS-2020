@@ -23,8 +23,21 @@ Private Sub Class_Terminate()
      Call Me.Reset
 End Sub
 
-Public Sub Logout()
+Public Function GetLesserRoles() As Messages
+'Returns a list of roles that are lesser than the current user's role
 
+     Dim asLesserRoles() As String
+
+     'Call the modDBUser Function
+     GetLesserRoles = DBUser_GetLesserRoles(m_sUsername, asLesserRoles)
+
+End Function
+
+Public Sub Logout()
+'Log the user out
+'Resets all of the member variables
+'Sends the user back to the login form (hides all other worksheets)
+     
      Call Me.Reset
 
      Call wsWelcome_ShowSection("Login")

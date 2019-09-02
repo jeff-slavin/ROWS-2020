@@ -1,7 +1,103 @@
 Option Explicit
 
+Public Function DBUser_GetRoleRank(ByVal sUsername As String, ByRef iRoleRank As Integer) As Messages
+
+     'Variable Declarations
+     Dim cROWSDB As New clsROWSDB
+     Dim sSQL As String
+     
+     'Build the SQL statement to grab the role rank for the sUsername parameter
+     sSQL = ""
+     sSQL = sSQL & "SELECT [tblUserRoles].iRank "
+     sSQL = sSQL & "FROM [tblUserRoles], [tblUsers] "
+     sSQL = sSQL & "WHERE [tblUsers].sUsername = '" & sUsername & "' "
+     sSQL = sSQL & "AND [tblUsers].iRoleID = [tblUserRoles].ID;"
+     
+     'Run the query
+     DBUser_GetRoleRank = cROWSDB.Query(sSQL, True)
+     
+     'Check for error
+     If DBUser_GetRoleRank <> Messages.msgTrue Then GoTo DBUser_GetRoleRank_Error
+     
+     'Check if a record was returned
+     If cROWSDB.RecordCount < 1 Then
+          DBUser_GetRoleRank = Messages.msgFalse
+          GoTo DBUser_GetRoleRank_Error
+     End If
+     
+     'Now set the role rank returned
+     If cROWSDB.Fields("iRank", iRoleRank) = False Then DBUser_GetRoleRank = Messages.msgFalse
+     
+DBUser_GetRoleRank_Error:
+     
+     Set cROWSDB = Nothing
+
+End Function
+
+Public Function DBUser_GetLesserRoles(ByVal sUsername As String, ByRef asLesserRoles() As String) As Messages
+
+     'Variable Declaration
+     Dim cROWSDB As New clsROWSDB
+     Dim sSQL As String
+     Dim iRoleRank As Integer
+     Dim i As Integer
+     
+     'Build the SQL statement to grab the lower ranked roles
+     'Note: Roles are ranked where the higher ones have a higher Rank (e.g. Administrator = 1)
+     'So while we say lower ranked roles, we're really grabbing roles with a higher rank number
+     
+     'clear out ByRef parameter
+     If IsArray(asLesserRoles) Then Erase asLesserRoles
+     
+     'Get current Role Rank First
+     DBUser_GetLesserRoles = DBUser_GetRoleRank(sUsername, iRoleRank)
+     
+     'check for error & let error bubble up
+     If DBUser_GetLesserRoles <> msgTrue Then GoTo DBUser_GetLesserRoles_Error
+     
+     'Now set SQL statement to find the roles that are lesser than our current iRoleRank variable
+     'Using greater than (>) sign as lesser roles actually have a higher iRank number (e.g. Administrator is 1, everything else is higher)
+     sSQL = ""
+     sSQL = sSQL & "SELECT [tblUserRoles].sRoleName "
+     sSQL = sSQL & "FROM [tblUserRoles] "
+     sSQL = sSQL & "WHERE [tblUserRoles].iRank > " & iRoleRank & " "
+     sSQL = sSQL & "AND [tblUserRoles].bIsActive = TRUE;"
+     
+     'Run the query
+     DBUser_GetLesserRoles = cROWSDB.Query(sSQL, True)
+     
+     'check for error
+     If DBUser_GetLesserRoles <> Messages.msgTrue Then GoTo DBUser_GetLesserRoles_Error
+     
+     'check that we got a record in return
+     If cROWSDB.RecordCount < 1 Then
+          DBUser_GetLesserRoles = Messages.msgFalse
+          GoTo DBUser_GetLesserRoles_Error
+     End If
+     
+     'We have a valid return, so let's capture the roles
+     cROWSDB.MoveFirst
+     i = 1
+     ReDim asLesserRoles(1 To cROWSDB.RecordCount)
+     
+     While Not cROWSDB.EOF
+          
+          Call cROWSDB.Fields("sRoleName", asLesserRoles(i))
+          
+          i = i + 1
+          cROWSDB.MoveNext
+     Wend
+     
+          
+DBUser_GetLesserRoles_Error:
+     'Clear memory
+     Set cROWSDB = Nothing
+
+End Function
+
 Public Function DBUser_SetLastLoginDateTime(ByVal sUsername As String) As Messages
 
+     'Variable Declaration
      Dim cROWSDB As New clsROWSDB
      Dim sSQL As String
      

@@ -1,5 +1,29 @@
 Option Explicit
 
+Private Sub cmdUserCreate_Click()
+'User has clicked the 'Create User' button
+'Take them to the 'UserCreate' worksheet
+'But first double check their permissions and that we have a valid global instance of clsUser
+
+     'Do we have a valid global instance of clsUser
+     If Not g_cUser Is Nothing Then
+          'See if we have a usernamet set
+          If g_cUser.Username = "" Then
+               'No username set, so logout and send back to the login screen
+               Call g_cUser.Logout
+          Else
+               'Valid global instance and valid username (or at least a username is set
+               Call Worksheets_ShowWelcomeAndOne("UserCreate")
+          End If
+     Else
+          'global instance of clsUser is not set, create it and logout
+          Set g_cUser = New clsUser
+          Call g_cUser.Logout
+     End If
+
+
+End Sub
+
 Private Sub Worksheet_Activate()
 'This is called whenever the Dashboard worksheet is selected
 'Let's enable/disable the buttons based on the current permissions

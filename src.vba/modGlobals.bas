@@ -15,7 +15,11 @@ Enum Messages
      msgTemporaryPassword = 4
 End Enum
 
+'******************************************************************************
 'Worksheet Range Locations
+'******************************************************************************
+
+' WELCOME Worksheet
 
      'Welcome Sheet Sections
      Global Const gc_wsLoginRange As String = "5:14"
@@ -39,3 +43,10 @@ End Enum
      Global Const gc_wsWelcomeTempPassword As String = "E26"
      Global Const gc_wsWelcomeNewPassword As String = "E28"
      Global Const gc_wsWelcomeRetypePassword As String = "E30"
+
+' USER CREATE Worksheet
+
+     Global Const gc_wsUserCreateUsername As String = "E7"
+     Global Const gc_wsUserCreateTempPassword As String = "E9"
+     Global Const gc_wsUserCreateRole As String = "E11"
+     Global Const gc_wsUserCreatePermissionStart As String = "J8"

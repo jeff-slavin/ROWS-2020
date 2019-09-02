@@ -2,20 +2,13 @@ Option Explicit
 
 Public Sub Test()
 
-     Dim asPermissions() As String
+     Dim iRoleRank As Integer
      Dim msgResponse As Messages
-     Dim i As Integer
      
-     msgResponse = DBUser_GetPermissions("JFMS", asPermissions)
+     msgResponse = DBUser_GetRoleRank("JFMS", iRoleRank)
      
-     MsgBox "Response : " & msgResponse
-     MsgBox "Records Found : " & UBound(asPermissions) - LBound(asPermissions)
-     
-     For i = LBound(asPermissions) To UBound(asPermissions)
-          MsgBox "Permission Found #" & Str(i) & ": " & asPermissions(i)
-     Next i
-     
-     If IsArray(asPermissions) Then Erase asPermissions
+     MsgBox "Response: " & msgResponse
+     MsgBox "Rank : " & iRoleRank
 
 End Sub
 
