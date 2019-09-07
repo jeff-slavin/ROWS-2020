@@ -29,12 +29,22 @@ Private Sub Worksheet_Change(ByVal Target As Range)
      Dim msgResponse As Messages
      Dim sError As String
 
+     MsgBox Target.Address
+
      'Did the user select a new role (not blank)
-     If Target.Address = gc_wsUserCreateRole Then
-          If Target.Value <> "" Then
+     If Target.Address = gc_wsUserCreateRole Or Target.Address = gc_wsUserCreateRoleRange Then
+          
+          'Clear out permissions no matter what, a change happened
+          Call wsUserCreate_ClearPermissionTable
+          
+          'Is the Target Cell not empty? If so, let's do the permissions table
+          'Reason for calling Cells(1,1) is so that this avoids the error when Target is a range
+          'In this case our role cell is 2 cells merged, so we get a range here
+          If Target.Cells(1, 1).Value <> "" Then
                'Fill out the permission table based on the selected role in this dropdown cell
-               'TODO
+               msgResponse = wsCreateUser_FillOutPermissionsTable(Target.Value, sError)
           End If
+          
      End If
      
 

@@ -52,5 +52,6 @@ End Enum
      Global Const gc_wsUserCreateUsername As String = "$E$7"
      Global Const gc_wsUserCreateTempPassword As String = "$E$9"
      Global Const gc_wsUserCreateRole As String = "$E$11"
+     Global Const gc_wsUserCreateRoleRange As String = "$E$11:$F$11"
      Global Const gc_wsUserCreatePermissionStart As String = "$J$8"
      Global Const gc_wsUserCreatePermissionTableRange As String = "$J$8:$L$25"

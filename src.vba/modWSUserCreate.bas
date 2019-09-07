@@ -1,5 +1,26 @@
 Option Explicit
 
+Public Function wsCreateUser_FillOutPermissionsTable(ByVal sRole As String, ByRef sError As String) As Messages
+'Get a list of all possible permissions that are active
+'List all of these permissions out
+'For "Enabled" column, do the following
+'    Pull in the default role permissions
+'    If the current user also has these permissions, then set them to enabled in the permissions table
+'    Permissions that do not meet these two criteria, grey out? and do not let the user set these
+          'lock the cell?
+
+
+     'Variable Declarations
+     
+
+     'Set initial response states
+     wsCreateUser_FillOutPermissionsTable = Messages.msgFalse
+     sError = ""
+     
+     
+
+End Function
+
 Public Sub wsUserCreate_ClearSheet()
 'Clear the worksheet cells that require inputs:
 '    Username
@@ -70,6 +91,9 @@ Public Function wsUserCreate_SetRoleDropdown() As Messages
           .ShowError = True
      End With
      
+     'Make sure the dropdown is blank to start
+     Worksheets("UserCreate").Range(gc_wsUserCreateRole).Value = ""
+     
 wsUserCreate_SetRoleDropdown_Error:
      'Clear memory
      If IsArray(asLesserRoles) Then Erase asLesserRoles
@@ -111,8 +135,5 @@ Public Function wsCreateUser_Activate(ByRef sError As String) As Messages
           sError = "Error : Unable to fill out the role dropdown in the UserCreate form :: Messages.ErrorCode = " & Str(wsCreateUser_Activate)
           Exit Function
      End If
-
-     'Fill out permissions table
-     
      
 End Function

@@ -1,5 +1,50 @@
 Option Explicit
 
+Public Function DBUser_GetAllActivePermissions(ByRef asPermissions() As String) As Messages
+'Returns information around all active permissions in the 'asPermissions' ByRef parameter
+
+     'Variable Declarations
+     Dim cROWSDB As New clsROWSDB
+     Dim sSQL As String
+
+     'Set initial states
+     DBUser_GetAllActivePermissions = Messages.msgFalse
+     
+     'Build the SQL statement to get all active permissions
+     sSQL = ""
+     sSQL = sSQL & "SELECT [tblPermissionCategories].sPermissionCategory, [tblPermissionList].sPermissionName "
+     sSQL = sSQL & "FROM [tblPermissionCategories], [tblPermissionList] "
+     sSQL = sSQL & "WHERE [tblPermissionList].iPermissionCategoryID = [tblPermissionCategories].ID "
+     sSQL = sSQL & "AND [tblPermissionList].bIsActive = TRUE "
+     sSQL = sSQL & "AND [tblPermissionCategories].bIsActive = TRUE;"
+     
+     'Run the query
+     DBUser_GetAllActivePermissions = cROWSDB.Query(sSQL, True)
+     
+     'Check for error
+     If DBUser_GetAllActivePermissions <> Messages.msgTrue Then GoTo DBUser_GetAllActivePermissions_Error
+     
+     'See if we have a record returned
+     If cROWSDB.RecordCount < 1 Then
+          DBUser_GetAllActivePermissions = Messages.msgFalse
+          GoTo DBUser_GetAllActivePermissions_Error
+     End If
+     
+     'We have a response with values returned (RecordCount > 0)
+     
+     'TODO
+          'Fill out ByRef array to return the permissions & information around them that we've gathered
+          'In the calling function, will need to then determine if these are default permissions for the role selected
+          'AND if the current user even has these permissions
+     
+     
+     
+     
+DBUser_GetAllActivePermissions_Error:
+     Set cROWSDB = Nothing
+
+End Function
+
 Public Function DBUser_GetRoleRank(ByVal sUsername As String, ByRef iRoleRank As Integer) As Messages
 
      'Variable Declarations
