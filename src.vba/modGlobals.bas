@@ -19,6 +19,9 @@ End Enum
 'Worksheet Range Locations
 '******************************************************************************
 
+'GLOBAL ERROR CELL
+     Global Const gc_rErrorCell As String = "$C$1"
+
 ' WELCOME Worksheet
 
      'Welcome Sheet Sections
@@ -32,21 +35,22 @@ End Enum
      Global Const gc_wscmdTempPasswordTop As Integer = 178
      
      'Welcome Error Cells
-     Global Const gc_wsWelcomeLoginError As String = "C6"
-     Global Const gc_wsWelcomeTempPasswordError As String = "C25"
+     Global Const gc_wsWelcomeLoginError As String = "$C$6"
+     Global Const gc_wsWelcomeTempPasswordError As String = "$C$25"
      
      'Welcome Cell Inputs
-     Global Const gc_wsWelcomeUsername As String = "D7"
-     Global Const gc_wsWelcomePassword As String = "D9"
-     Global Const gc_wsWelcomeLoggedInUsername As String = "D17"
-     Global Const gc_wsWelcomeLoggedInRole As String = "D18"
-     Global Const gc_wsWelcomeTempPassword As String = "E26"
-     Global Const gc_wsWelcomeNewPassword As String = "E28"
-     Global Const gc_wsWelcomeRetypePassword As String = "E30"
+     Global Const gc_wsWelcomeUsername As String = "$D$7"
+     Global Const gc_wsWelcomePassword As String = "$D$9"
+     Global Const gc_wsWelcomeLoggedInUsername As String = "$D$17"
+     Global Const gc_wsWelcomeLoggedInRole As String = "$D$18"
+     Global Const gc_wsWelcomeTempPassword As String = "$E$26"
+     Global Const gc_wsWelcomeNewPassword As String = "$E$28"
+     Global Const gc_wsWelcomeRetypePassword As String = "$E$30"
 
 ' USER CREATE Worksheet
 
-     Global Const gc_wsUserCreateUsername As String = "E7"
-     Global Const gc_wsUserCreateTempPassword As String = "E9"
-     Global Const gc_wsUserCreateRole As String = "E11"
-     Global Const gc_wsUserCreatePermissionStart As String = "J8"
+     Global Const gc_wsUserCreateUsername As String = "$E$7"
+     Global Const gc_wsUserCreateTempPassword As String = "$E$9"
+     Global Const gc_wsUserCreateRole As String = "$E$11"
+     Global Const gc_wsUserCreatePermissionStart As String = "$J$8"
+     Global Const gc_wsUserCreatePermissionTableRange As String = "$J$8:$L$25"

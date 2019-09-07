@@ -55,13 +55,25 @@ Public Function DBUser_GetLesserRoles(ByVal sUsername As String, ByRef asLesserR
      'check for error & let error bubble up
      If DBUser_GetLesserRoles <> msgTrue Then GoTo DBUser_GetLesserRoles_Error
      
-     'Now set SQL statement to find the roles that are lesser than our current iRoleRank variable
-     'Using greater than (>) sign as lesser roles actually have a higher iRank number (e.g. Administrator is 1, everything else is higher)
-     sSQL = ""
-     sSQL = sSQL & "SELECT [tblUserRoles].sRoleName "
-     sSQL = sSQL & "FROM [tblUserRoles] "
-     sSQL = sSQL & "WHERE [tblUserRoles].iRank > " & iRoleRank & " "
-     sSQL = sSQL & "AND [tblUserRoles].bIsActive = TRUE;"
+'If the user is not an administrator find the lesser roles
+     If g_cUser.Role <> "Administrator" Then
+          'Now set SQL statement to find the roles that are lesser than our current iRoleRank variable
+          'Using greater than (>) sign as lesser roles actually have a higher iRank number (e.g. Administrator is 1, everything else is higher)
+          sSQL = ""
+          sSQL = sSQL & "SELECT [tblUserRoles].sRoleName "
+          sSQL = sSQL & "FROM [tblUserRoles] "
+          sSQL = sSQL & "WHERE [tblUserRoles].iRank > " & iRoleRank & " "
+          sSQL = sSQL & "AND [tblUserRoles].bIsActive = TRUE;"
+     Else
+          'User is an administrator, so get all active roles
+          sSQL = ""
+          sSQL = sSQL & "SELECT [tblUserRoles].sRoleName "
+          sSQL = sSQL & "FROM [tblUserRoles] "
+          sSQL = sSQL & "WHERE [tblUserRoles].bIsActive = TRUE;"
+     End If
+     
+'if the user is an administrator then find all roles
+
      
      'Run the query
      DBUser_GetLesserRoles = cROWSDB.Query(sSQL, True)

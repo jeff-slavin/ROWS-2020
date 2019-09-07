@@ -17,6 +17,32 @@ Public Sub Worksheets_ShowAll()
 
 End Sub
 
+Public Sub Worksheets_ShowWelcomeAndOneWithError(ByVal sSheetName As String, ByVal sError As String)
+
+     Dim ws As Worksheet
+     
+     For Each ws In ActiveWorkbook.Worksheets
+          
+          If ws.Name = sSheetName Or ws.Name = "Welcome" Then
+               'If Welcome or the requested worksheet, show it
+               ws.Visible = xlSheetVisible
+               
+               'Show the error
+               If ws.Name = sSheetName Then ws.Range(gc_rErrorCell).Value = sError
+               
+               'Only activate the "Welcome" worksheet if it was the sheet asked for
+               If ws.Name <> "Welcome" Or sSheetName = "Welcome" Then ws.Activate
+          Else
+               'Hide all other worksheets
+               ws.Visible = xlSheetVeryHidden
+          End If
+     
+     Next ws
+     
+     Set ws = Nothing
+
+End Sub
+
 Public Sub Worksheets_ShowWelcomeAndOne(ByVal sSheetName As String)
 'Keeps the Welcome worksheet visible
 'Hides all other worksheets except for the one that has the name matching the parameter sSheetName
@@ -30,6 +56,10 @@ Public Sub Worksheets_ShowWelcomeAndOne(ByVal sSheetName As String)
           If ws.Name = sSheetName Or ws.Name = "Welcome" Then
                'If Welcome or the requested worksheet, show it
                ws.Visible = xlSheetVisible
+               
+               'clear error cell
+               If ws.Name = sSheetName Then ws.Range(gc_rErrorCell).Value = ""
+               
                'Only activate the "Welcome" worksheet if it was the sheet asked for
                If ws.Name <> "Welcome" Or sSheetName = "Welcome" Then ws.Activate
           Else
