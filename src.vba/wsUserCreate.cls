@@ -29,8 +29,6 @@ Private Sub Worksheet_Change(ByVal Target As Range)
      Dim msgResponse As Messages
      Dim sError As String
 
-     MsgBox Target.Address
-
      'Did the user select a new role (not blank)
      If Target.Address = gc_wsUserCreateRole Or Target.Address = gc_wsUserCreateRoleRange Then
           
@@ -43,6 +41,11 @@ Private Sub Worksheet_Change(ByVal Target As Range)
           If Target.Cells(1, 1).Value <> "" Then
                'Fill out the permission table based on the selected role in this dropdown cell
                msgResponse = wsCreateUser_FillOutPermissionsTable(Target.Value, sError)
+               
+               'Check for error
+               If msgResponse <> Messages.msgTrue Then
+                    MsgBox "Error Code : " & msgResponse & "   Error : " & sError
+               End If
           End If
           
      End If

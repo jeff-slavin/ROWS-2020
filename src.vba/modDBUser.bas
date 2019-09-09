@@ -1,28 +1,94 @@
 Option Explicit
 
+Public Function DBUser_GetDefaultRolePermissions(ByVal sRole As String, ByRef asDefaultPermissions() As String) As Messages
+'Returns the default permissions for the given sRole parameter
+
+     'Variable Declarations
+     Dim cROWSDB As New clsROWSDB
+     Dim sSQL As String
+     Dim i As Integer
+     
+     'Set initial states
+     DBUser_GetDefaultRolePermissions = Messages.msgFalse
+     If IsArray(asDefaultPermissions) Then Erase asDefaultPermissions
+     
+     MsgBox "Here : DBUser_GetDefaultRolePermissions : sRole = " & sRole
+     
+     'Build the SQL statement to get the default permissions for the given role
+     sSQL = ""
+     sSQL = sSQL & "SELECT [tblPermissionList].sPermissionName "
+     sSQL = sSQL & "FROM [tblPermissionList], [tblUserRoles], [tblDefaultRolePermissions] "
+     sSQL = sSQL & "WHERE [tblUserRoles].sRoleName = '" & sRole & "' "
+     sSQL = sSQL & "AND [tblDefaultRolePermissions].iUserRoleID = [tblUserRoles].ID "
+     sSQL = sSQL & "AND [tblDefaultRolePermissions].iPermissionID = [tblPermissionList].ID "
+     sSQL = sSQL & "AND [tblDefaultRolePermissions].bIsActive = TRUE "
+     sSQL = sSQL & "AND [tblPermissionList].bIsActive = TRUE;"
+     
+     MsgBox sSQL
+     
+     DBUser_GetDefaultRolePermissions = cROWSDB.Query(sSQL, True)
+     
+     'Check for Error
+     If DBUser_GetDefaultRolePermissions <> Messages.msgTrue Then GoTo DBUser_GetDefaultRolePermissions_Error
+     
+     MsgBox "Get Default Role Permissions : Query Ran Successfully"
+     
+     'See if we have a record returned
+     If cROWSDB.RecordCount < 1 Then
+          DBUser_GetDefaultRolePermissions = Messages.msgFalse
+          GoTo DBUser_GetDefaultRolePermissions_Error
+     End If
+     
+     'We now have a valid response with a RecordCount > 0
+     i = 1
+     cROWSDB.MoveFirst
+     ReDim asDefaultPermissions(1 To cROWSDB.RecordCount)
+     
+     While Not cROWSDB.EOF
+     
+          Call cROWSDB.Fields("sPermissionName", asDefaultPermissions(i))
+     
+          i = i + 1
+          cROWSDB.MoveNext
+     Wend
+
+DBUser_GetDefaultRolePermissions_Error:
+     'Clear memory
+     Set cROWSDB = Nothing
+
+End Function
+
 Public Function DBUser_GetAllActivePermissions(ByRef asPermissions() As String) As Messages
 'Returns information around all active permissions in the 'asPermissions' ByRef parameter
 
      'Variable Declarations
      Dim cROWSDB As New clsROWSDB
      Dim sSQL As String
-
+     Dim i As Integer
+     
      'Set initial states
      DBUser_GetAllActivePermissions = Messages.msgFalse
+     If IsArray(asPermissions) Then Erase asPermissions
+     
+     MsgBox "Here : DBUser_GetAllActivePermissions"
      
      'Build the SQL statement to get all active permissions
      sSQL = ""
      sSQL = sSQL & "SELECT [tblPermissionCategories].sPermissionCategory, [tblPermissionList].sPermissionName "
-     sSQL = sSQL & "FROM [tblPermissionCategories], [tblPermissionList] "
-     sSQL = sSQL & "WHERE [tblPermissionList].iPermissionCategoryID = [tblPermissionCategories].ID "
-     sSQL = sSQL & "AND [tblPermissionList].bIsActive = TRUE "
-     sSQL = sSQL & "AND [tblPermissionCategories].bIsActive = TRUE;"
+     sSQL = sSQL & "FROM [tblPermissionList], [tblPermissionCategories] "
+     sSQL = sSQL & "WHERE [tblPermissionList].bIsActive = TRUE "
+     sSQL = sSQL & "AND [tblPermissionCategories].bIsActive = TRUE "
+     sSQL = sSQL & "AND [tblPermissionList].iPermissionCategoryID = [tblPermissionCategories].ID;"
+     
+     MsgBox "Here : DBUser_GetAllActivePermissions RUNNING QUERY"
      
      'Run the query
      DBUser_GetAllActivePermissions = cROWSDB.Query(sSQL, True)
      
      'Check for error
      If DBUser_GetAllActivePermissions <> Messages.msgTrue Then GoTo DBUser_GetAllActivePermissions_Error
+     
+     MsgBox "Here : DBUser_GetAllActivePermissions QUERY SUCCESS"
      
      'See if we have a record returned
      If cROWSDB.RecordCount < 1 Then
@@ -31,16 +97,21 @@ Public Function DBUser_GetAllActivePermissions(ByRef asPermissions() As String) 
      End If
      
      'We have a response with values returned (RecordCount > 0)
+     i = 1
+     cROWSDB.MoveFirst
+     ReDim asPermissions(1 To cROWSDB.RecordCount, 1 To 2)
      
-     'TODO
-          'Fill out ByRef array to return the permissions & information around them that we've gathered
-          'In the calling function, will need to then determine if these are default permissions for the role selected
-          'AND if the current user even has these permissions
+     While Not cROWSDB.EOF
      
+          Call cROWSDB.Fields("sPermissionCategory", asPermissions(i, 1))
+          Call cROWSDB.Fields("sPermissionName", asPermissions(i, 2))
      
-     
+          i = i + 1
+          cROWSDB.MoveNext
+     Wend
      
 DBUser_GetAllActivePermissions_Error:
+     'Clear memory
      Set cROWSDB = Nothing
 
 End Function
@@ -144,7 +215,6 @@ Public Function DBUser_GetLesserRoles(ByVal sUsername As String, ByRef asLesserR
           i = i + 1
           cROWSDB.MoveNext
      Wend
-     
           
 DBUser_GetLesserRoles_Error:
      'Clear memory
