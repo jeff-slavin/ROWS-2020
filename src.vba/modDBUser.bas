@@ -12,8 +12,6 @@ Public Function DBUser_GetDefaultRolePermissions(ByVal sRole As String, ByRef as
      DBUser_GetDefaultRolePermissions = Messages.msgFalse
      If IsArray(asDefaultPermissions) Then Erase asDefaultPermissions
      
-     MsgBox "Here : DBUser_GetDefaultRolePermissions : sRole = " & sRole
-     
      'Build the SQL statement to get the default permissions for the given role
      sSQL = ""
      sSQL = sSQL & "SELECT [tblPermissionList].sPermissionName "
@@ -24,14 +22,10 @@ Public Function DBUser_GetDefaultRolePermissions(ByVal sRole As String, ByRef as
      sSQL = sSQL & "AND [tblDefaultRolePermissions].bIsActive = TRUE "
      sSQL = sSQL & "AND [tblPermissionList].bIsActive = TRUE;"
      
-     MsgBox sSQL
-     
      DBUser_GetDefaultRolePermissions = cROWSDB.Query(sSQL, True)
      
      'Check for Error
      If DBUser_GetDefaultRolePermissions <> Messages.msgTrue Then GoTo DBUser_GetDefaultRolePermissions_Error
-     
-     MsgBox "Get Default Role Permissions : Query Ran Successfully"
      
      'See if we have a record returned
      If cROWSDB.RecordCount < 1 Then
@@ -70,8 +64,6 @@ Public Function DBUser_GetAllActivePermissions(ByRef asPermissions() As String) 
      DBUser_GetAllActivePermissions = Messages.msgFalse
      If IsArray(asPermissions) Then Erase asPermissions
      
-     MsgBox "Here : DBUser_GetAllActivePermissions"
-     
      'Build the SQL statement to get all active permissions
      sSQL = ""
      sSQL = sSQL & "SELECT [tblPermissionCategories].sPermissionCategory, [tblPermissionList].sPermissionName "
@@ -80,15 +72,11 @@ Public Function DBUser_GetAllActivePermissions(ByRef asPermissions() As String) 
      sSQL = sSQL & "AND [tblPermissionCategories].bIsActive = TRUE "
      sSQL = sSQL & "AND [tblPermissionList].iPermissionCategoryID = [tblPermissionCategories].ID;"
      
-     MsgBox "Here : DBUser_GetAllActivePermissions RUNNING QUERY"
-     
      'Run the query
      DBUser_GetAllActivePermissions = cROWSDB.Query(sSQL, True)
      
      'Check for error
      If DBUser_GetAllActivePermissions <> Messages.msgTrue Then GoTo DBUser_GetAllActivePermissions_Error
-     
-     MsgBox "Here : DBUser_GetAllActivePermissions QUERY SUCCESS"
      
      'See if we have a record returned
      If cROWSDB.RecordCount < 1 Then

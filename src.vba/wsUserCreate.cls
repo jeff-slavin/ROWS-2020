@@ -43,7 +43,10 @@ Private Sub Worksheet_Change(ByVal Target As Range)
                msgResponse = wsCreateUser_FillOutPermissionsTable(Target.Value, sError)
                
                'Check for error
-               If msgResponse <> Messages.msgTrue Then
+               'If msgTrue then we have some default role permissions
+               'If msgFalse then we have a valid query but no default role permissions are set
+               'If we have anything else, then we have a true error
+               If msgResponse <> Messages.msgTrue And msgResponse <> Messages.msgFalse Then
                     MsgBox "Error Code : " & msgResponse & "   Error : " & sError
                End If
           End If

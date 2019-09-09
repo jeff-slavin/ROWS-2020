@@ -9,32 +9,31 @@ Public Function wsCreateUser_FillOutPermissionsTable(ByVal sRole As String, ByRe
 '    Permissions that do not meet these two criteria, grey out? and do not let the user set these
           'lock the cell?
 
-     MsgBox "HERE::wsCreateUser_FillOutPermissionsTable"
-
      'Variable Declarations
      Dim asAllPermissions() As String
      Dim asDefaultRolePermissions() As String
      Dim i As Integer
      Dim rWrite As Range
+     Dim sDefaultPermissions As String
+     Dim sPermission As String
      
      'Set initial response states
      wsCreateUser_FillOutPermissionsTable = Messages.msgFalse
      sError = ""
+     sDefaultPermissions = ""
      
      'Get All Permissions
      wsCreateUser_FillOutPermissionsTable = DBUser_GetAllActivePermissions(asAllPermissions)
      'Check for error
      If wsCreateUser_FillOutPermissionsTable <> Messages.msgTrue Then GoTo wsCreateUser_FillOutPermissionsTable_Error
      
-     MsgBox "HERE::Got All Permissions"
-     
-     MsgBox "Getting Default Permissions"
      'Get Default Permissions For sRole
      wsCreateUser_FillOutPermissionsTable = DBUser_GetDefaultRolePermissions(sRole, asDefaultRolePermissions)
      'Check for error
-     If wsCreateUser_FillOutPermissionsTable <> Messages.msgTrue Then GoTo wsCreateUser_FillOutPermissionsTable_Error
-     
-     MsgBox "Got Default Permissions!!!!!!!!!!!1"
+     'msgTrue means we have default permissions found
+     'msgFalse means there are no defaults set
+     'Anything else means a true error
+     If wsCreateUser_FillOutPermissionsTable <> Messages.msgTrue And wsCreateUser_FillOutPermissionsTable <> Messages.msgFalse Then GoTo wsCreateUser_FillOutPermissionsTable_Error
      
      'We now have a list of all of the active permissions as well as what the default permissions for the selected role are
      'Next Steps:
@@ -46,11 +45,55 @@ Public Function wsCreateUser_FillOutPermissionsTable(ByVal sRole As String, ByRe
      Set rWrite = Worksheets("UserCreate").Range(gc_wsUserCreatePermissionStart)
      
      For i = LBound(asAllPermissions) To UBound(asAllPermissions)
+     
           rWrite.Value = asAllPermissions(i, 1)
           rWrite.Offset(0, 1).Value = asAllPermissions(i, 2)
           
           Set rWrite = rWrite.Offset(1, 0)
+          
      Next i
+     
+     'All permissions have now been listed in our permissions table
+     'Now lets check off any defaults
+     'First check if we do not have any default permissions, if none, then skip
+     If wsCreateUser_FillOutPermissionsTable = Messages.msgFalse Then GoTo wsCreateUser_FillOutPermissionsTable_Error
+     
+     'We have some default permissions, so let's check these off
+     'First convert this array to a string so we can use InStr for searching & matching
+     Call ConvertArrayToString(asDefaultRolePermissions, sDefaultPermissions)
+     
+     'Now loop through the cells on the worksheet that contain the permissions
+     'If they are default AND the current user has this permission, then check it off
+     'If they are not a default AND the current user has it, leave it blank but allow it to be enabled
+     'Otherwise disable/color disable the permission
+     Set rWrite = Worksheets("UserCreate").Range(gc_wsUserCreatePermissionStart)
+     
+     While rWrite.Value <> ""
+     
+          'Get permission name for the cell row we are on
+          sPermission = rWrite.Offset(0, 1).Value
+          
+          'Does the current user have this permission?
+          'If not, then disable this row (color as disabled)
+          If InStr(g_cUser.Permissions, sPermission) < 1 Then
+               MsgBox "sPermission = '" & sPermission & "'" & vbCrLf & "g_cUser.Permissions = '" & g_cUser.Permissions & "'"
+               'User does not have this permission
+               'Testing - for now just display that this row will be disabled
+               rWrite.Offset(0, 2).Value = "Nope!"
+          Else
+               'User has this permission
+               'Is this a default
+               If InStr(sDefaultPermissions, sPermission) < 1 Then
+                    'not a default
+               Else
+                    'is a default
+                    rWrite.Offset(0, 2).Value = "X"
+               End If
+          End If
+     
+          Set rWrite = rWrite.Offset(1, 0)
+          
+     Wend
 
 wsCreateUser_FillOutPermissionsTable_Error:
      'Clear memory
