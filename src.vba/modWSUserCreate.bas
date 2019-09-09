@@ -73,19 +73,20 @@ Public Function wsCreateUser_FillOutPermissionsTable(ByVal sRole As String, ByRe
           'Get permission name for the cell row we are on
           sPermission = rWrite.Offset(0, 1).Value
           
+          'TODO: The below
+          
           'Does the current user have this permission?
           'If not, then disable this row (color as disabled)
           If InStr(g_cUser.Permissions, sPermission) < 1 Then
-               MsgBox "sPermission = '" & sPermission & "'" & vbCrLf & "g_cUser.Permissions = '" & g_cUser.Permissions & "'"
                'User does not have this permission
                'Testing - for now just display that this row will be disabled
+               'Disable these cells
                rWrite.Offset(0, 2).Value = "Nope!"
           Else
-               'User has this permission
-               'Is this a default
-               If InStr(sDefaultPermissions, sPermission) < 1 Then
-                    'not a default
-               Else
+               'Enable the cells
+               
+               'Then check as default or not
+               If InStr(sDefaultPermissions, sPermission) > 0 Then
                     'is a default
                     rWrite.Offset(0, 2).Value = "X"
                End If
